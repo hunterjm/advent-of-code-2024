@@ -21,7 +21,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     // Now pair in sorted order (smallest with smallest, etc)
     let result = list1
         .into_iter()
-        .zip(list2.into_iter())
+        .zip(list2)
         .map(|(a, b)| b.abs_diff(a))
         .sum();
 
@@ -45,7 +45,10 @@ pub fn part_two(input: &str) -> Option<u32> {
     }
 
     // sum the list, multiplied by the frequency of the number in the map, returning 0 if the number is not in the map
-    let result = list1.iter().map(|n| n * freq_map.get(n).unwrap_or(&0)).sum();
+    let result = list1
+        .iter()
+        .map(|n| n * freq_map.get(n).unwrap_or(&0))
+        .sum();
     Some(result)
 }
 
