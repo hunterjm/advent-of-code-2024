@@ -30,7 +30,7 @@ fn run_game(
     map: &[Vec<char>],
     guard: (i32, i32),
     test_pos: Option<(usize, usize)>,
-) -> (bool, usize) {
+) -> (bool, HashSet<(i32, i32)>) {
     // Setup the game
     let mut position = guard;
     let mut direction = (0, -1); // Up
@@ -50,7 +50,7 @@ fn run_game(
             || next_position.1 < 0
             || next_position.1 >= map.len() as i32
         {
-            return (false, positions.len());
+            return (false, positions);
         }
 
         // Check if we hit an obstacle
@@ -79,7 +79,7 @@ fn run_game(
         // Save the position and direction to check for loops
         if !state_history.insert((position, direction)) {
             // We are in a loop
-            return (true, positions.len());
+            return (true, positions);
         }
     }
 }
@@ -87,22 +87,23 @@ fn run_game(
 pub fn part_one(input: &str) -> Option<u32> {
     let (map, guard) = init_map(input);
     let (_, positions) = run_game(&map, guard, None);
-    Some(positions as u32)
+    Some(positions.len() as u32)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
     let (map, guard) = init_map(input);
+    let (_, positions) = run_game(&map, guard, None);
     let mut loop_count = 0;
 
-    // Just brute force it
-    for y in 0..map.len() {
-        for x in 0..map[0].len() {
-            if map[y][x] == '.'
-                && (y as i32, x as i32) != guard
-                && run_game(&map, guard, Some((y, x))).0
-            {
-                loop_count += 1;
-            }
+    // Use the position history to find the path, and potential positions to place an additional obstacle
+    for position in positions {
+        let (is_loop, _) = run_game(
+            &map,
+            guard,
+            Some((position.1 as usize, position.0 as usize)),
+        );
+        if is_loop {
+            loop_count += 1;
         }
     }
 
