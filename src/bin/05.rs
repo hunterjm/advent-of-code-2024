@@ -1,5 +1,5 @@
-use petgraph::graph::{DiGraph, NodeIndex};
 use petgraph::algo::toposort;
+use petgraph::graph::{DiGraph, NodeIndex};
 use std::collections::HashMap;
 
 advent_of_code::solution!(5);
@@ -45,21 +45,18 @@ pub fn part_two(input: &str) -> Option<u32> {
                 Err(_) => sequence.clone(), // If cyclic, keep original order
             };
 
-            let order_map: HashMap<u32, usize> = order.iter()
-                .enumerate()
-                .map(|(i, &val)| (val, i))
-                .collect();
+            let order_map: HashMap<u32, usize> =
+                order.iter().enumerate().map(|(i, &val)| (val, i)).collect();
 
             let mut sorted_sequence = sequence.clone();
-            sorted_sequence.sort_by(|&a, &b| {
-                match (order_map.get(&a), order_map.get(&b)) {
-                    (Some(ord_a), Some(ord_b)) => ord_a.cmp(ord_b),
-                    (Some(_), None) => std::cmp::Ordering::Less,
-                    (None, Some(_)) => std::cmp::Ordering::Greater,
-                    (None, None) => sequence.iter()
-                        .position(|&x| x == a)
-                        .cmp(&sequence.iter().position(|&x| x == b)),
-                }
+            sorted_sequence.sort_by(|&a, &b| match (order_map.get(&a), order_map.get(&b)) {
+                (Some(ord_a), Some(ord_b)) => ord_a.cmp(ord_b),
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (None, None) => sequence
+                    .iter()
+                    .position(|&x| x == a)
+                    .cmp(&sequence.iter().position(|&x| x == b)),
             });
 
             let middle = sorted_sequence.len() / 2;
@@ -71,7 +68,8 @@ pub fn part_two(input: &str) -> Option<u32> {
 }
 
 fn filter_rules(rules: &str, sequence: &[u32]) -> Vec<(u32, u32)> {
-    rules.lines()
+    rules
+        .lines()
         .filter_map(|rule| {
             let parts: Vec<u32> = rule.split('|').map(|s| s.parse().unwrap()).collect();
             let (x, y) = (parts[0], parts[1]);
