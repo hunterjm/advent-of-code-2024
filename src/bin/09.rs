@@ -68,9 +68,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         // Find suitable segment with binary search characteristics
         let suitable_seg = free_segments
             .range(..start)
-            .find(|(&seg_start, &seg_len)|
-                seg_start + seg_len <= start && seg_len >= length
-            )
+            .find(|(&seg_start, &seg_len)| seg_start + seg_len <= start && seg_len >= length)
             .map(|(&s, &l)| (s, l));
 
         if let Some((fs_start, fs_len)) = suitable_seg {
