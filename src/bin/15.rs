@@ -86,7 +86,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         robot_r: &mut usize,
         robot_c: &mut usize,
         dr: isize,
-        dc: isize
+        dc: isize,
     ) {
         let nr = (*robot_r as isize + dr) as usize;
         let nc = (*robot_c as isize + dc) as usize;
@@ -150,7 +150,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                     'O' => new_line.push_str("[]"),
                     '.' => new_line.push_str(".."),
                     '@' => new_line.push_str("@."),
-                    _   => new_line.push_str(".."), // fallback
+                    _ => new_line.push_str(".."), // fallback
                 }
             }
             result.push(new_line.chars().collect());
@@ -169,7 +169,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         c: usize,
         dr: isize,
         dc: isize,
-        visited: &mut Vec<Vec<bool>>
+        visited: &mut Vec<Vec<bool>>,
     ) -> Vec<(usize, usize)> {
         let mut result = vec![(r, c)];
         visited[r][c] = true;
@@ -182,8 +182,9 @@ pub fn part_two(input: &str) -> Option<u32> {
                 let nc = (c as isize + check_dc) as usize;
 
                 if nc < warehouse[0].len()
-                   && !visited[nr][nc]
-                   && matches!(warehouse[nr][nc], '[' | ']') {
+                    && !visited[nr][nc]
+                    && matches!(warehouse[nr][nc], '[' | ']')
+                {
                     let mut connected = find_connected_boxes(warehouse, nr, nc, dr, dc, visited);
                     result.append(&mut connected);
                 }
@@ -207,9 +208,10 @@ pub fn part_two(input: &str) -> Option<u32> {
             let nr = (r as isize + dr) as usize;
             if nr < warehouse.len() {
                 // Check both positions in the next row that could be touching this box
-                for nc in start_c..=start_c+1 {
+                for nc in start_c..=start_c + 1 {
                     if !visited[nr][nc] && matches!(warehouse[nr][nc], '[' | ']') {
-                        let mut connected = find_connected_boxes(warehouse, nr, nc, dr, dc, visited);
+                        let mut connected =
+                            find_connected_boxes(warehouse, nr, nc, dr, dc, visited);
                         result.append(&mut connected);
                     }
                 }
@@ -241,13 +243,14 @@ pub fn part_two(input: &str) -> Option<u32> {
                 let connected = find_connected_boxes(warehouse, nr, nc, dr, dc, &mut visited);
 
                 // Check if all boxes can be moved
-                let can_move = connected.iter().all(|(r, c)| {
-                    can_push(warehouse, *r, *c, dr, dc)
-                });
+                let can_move = connected
+                    .iter()
+                    .all(|(r, c)| can_push(warehouse, *r, *c, dr, dc));
 
                 if can_move {
                     // Store the box configuration
-                    let boxes: Vec<(char, usize, usize)> = connected.iter()
+                    let boxes: Vec<(char, usize, usize)> = connected
+                        .iter()
                         .map(|(r, c)| (warehouse[*r][*c], *r, *c))
                         .collect();
 
@@ -270,7 +273,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                     *robot_c = nc;
                 }
             }
-            '#' | '@' => {},
+            '#' | '@' => {}
             _ => {}
         }
     }
@@ -312,9 +315,9 @@ mod tests {
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(9021));
-        let result_small = part_one(&advent_of_code::template::read_file_part(
+        let result_small = part_two(&advent_of_code::template::read_file_part(
             "examples", DAY, 2,
         ));
-        assert_eq!(result_small, Some(1626));
+        assert_eq!(result_small, Some(1751));
     }
 }
